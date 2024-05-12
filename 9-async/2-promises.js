@@ -42,12 +42,12 @@ console.log('1 - Start');
 
 getId().then(({ id }) => {
   getEmail(id).then(({ id, email }) => {
-    sendMail('douglasrpilar@gmail.com', 'Corpo do e-mail')
-      .then( ({ email, body }) => {
-        console.log('E-mail sent to ', email);
+    sendMail(email, 'Corpo do e-mail')
+      .then(({ email, body }) => {
+        console.log('6 - E-mail sent to ', email);
       })
       .catch((error) => {
-        console.log('Error: ' + error);
+        console.log('6 - Error: ' + error);
       });
   });
 });

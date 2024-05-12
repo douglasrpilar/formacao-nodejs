@@ -38,56 +38,29 @@ const sendMail = (email, body) => {
   });
 }
 
+const app = async () => {
+  var { id } = await getId();
+  var { id, email } = await getEmail(id);
 
-const getUsers = () => {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      resolve([
-        {
-          name: 'Name A',
-          email: 'namea@email.com'
-        },
-        {
-          name: 'Name B',
-          email: 'nameb@email.com'
-        },
-        {
-          name: 'Name C',
-          email: 'namec@email.com'
-        },
-      ]);
-    }, 3000);
-  });
+  /*sendMail(email, 'Corpo do e-mail')
+    .then( ({ email, body }) => {
+      console.log('6 - E-mail sent to ', email);
+    })
+    .catch((error) => {
+      console.log('6 - Error: ' + error);
+    });*/
+
+  // or
+
+  try {
+    var { email, body } = await sendMail(email, 'Corpo do e-mail');
+    console.log('6 - E-mail sent to ', email);
+  }
+  catch (error) {
+    console.log('6 - Error: ' + error);
+  }
 }
 
-const foo1 = async () => {
-  // Await só funciona com promises e dentro de funções async.
-  var users = await getUsers();
-  console.log(users);
-}
-
-const foo2 = async () => {
-  var users = await getUsers();
-  console.log(users);
-}
-
-main();
-
-
-/*console.log('1 - Start');
-
-getId().then(({ id }) => {
-  getEmail(id).then(({ id, email }) => {
-    sendMail('douglasrpilar@gmail.com', 'Corpo do e-mail')
-      .then( ({ email, body }) => {
-        console.log('E-mail sent to ', email);
-      })
-      .catch((error) => {
-        console.log('Error: ' + error);
-      });
-  });
-});
-
-
+console.log('1 - Start');
+app();
 console.log('2 - Email sending started.');
-*/
