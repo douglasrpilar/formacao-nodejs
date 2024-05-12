@@ -1,0 +1,16 @@
+<%- include ('partials/header.ejs') %>
+  <div class="card" id="question-form">
+    <div class="card-header">
+      <h1>Question</h1>
+    </div>
+    <div class="card-body">
+      <form method="POST" action="/question/save">
+        <input name="title" type="text" placeholder="Title" class="form-control" required />
+        <br />
+        <textarea name="description" placeholder="Description" class="form-control" required ></textarea>
+        <br />
+        <button class="btn btn-success">Send</button>
+      </form>
+    </div>
+  </div>
+<%- include ('partials/footer.ejs') %>

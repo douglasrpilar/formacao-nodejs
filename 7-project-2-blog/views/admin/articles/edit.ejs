@@ -1,0 +1,62 @@
+<%- include ('../../partials/header.ejs') %>
+
+<div class="card">
+  <div class="card-header">
+    <h1>Edit Article</h1>
+  </div>
+  <div class="card-body">
+    <form method="POST" action="/admin/articles/update">
+      <input name="id" type="hidden" value="<%= article.id %>" />
+      <input name="title" type="text" placeholder="Enter the title of the article" class="form-control" value="<%= article.title %>" required />
+      <br />
+      <label>Category:</label>
+      <select id="category" name="category" class="form-control">
+      <% categories.forEach((category) => { %>
+        <option
+          value="<%= category.id %>"
+          <%= category.id == article.categoryId ? 'selected="selected"': '' %>
+        >
+          <%= category.title %>
+        </option>
+      <% }); %>
+      </select>
+      <br />
+      <textarea id="article" name="body" placeholder="Write the article here" class="form-control" /></textarea>
+      <br />
+      <button class="btn btn-success">Update</button>
+    </form>
+  </div>
+</div>
+
+<div id="content" class="d-none">
+  <%- article.body %>
+</div>
+
+<%- include ('../../partials/footer.ejs') %>
+
+<script src="/js/tinymce/tinymce.min.js"></script>
+<script>
+  tinymce.init({
+    selector: '#article',
+    language: 'pt_BR',
+    plugins: [
+      'advlist',
+      'autolink',
+      'link',
+      'image',
+      'lists',
+      'preview',
+      'searchreplace',
+      'wordcount',
+      'fullscreen',
+      'insertdatetime',
+      'media',
+      'save',
+      'table',
+      'emoticons',
+    ],
+    init_instance_callback: () => {
+      tinymce.get('article').setContent($('#content').html());
+    }
+  });
+</script>

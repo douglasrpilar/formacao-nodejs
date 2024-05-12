@@ -1,0 +1,17 @@
+<%- include ('../../partials/header.ejs') %>
+
+<div class="card">
+  <div class="card-header">
+    <h1>Edit Category</h1>
+  </div>
+  <div class="card-body">
+    <form method="POST" action="/admin/categories/update">
+      <input name="title" type="text" placeholder="Title" value="<%= category.title %>" class="form-control" required />
+      <input name="id" type="hidden" value="<%= category.id %>" />
+      <br />
+      <button class="btn btn-success">Update</button>
+    </form>
+  </div>
+</div>
+
+<%- include ('../../partials/footer.ejs') %>

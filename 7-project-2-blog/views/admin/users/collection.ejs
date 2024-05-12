@@ -1,0 +1,48 @@
+<%- include ('../../partials/header.ejs') %>
+<%- include ('../../partials/title.ejs', {
+  title: 'Users',
+  button: {
+    label: 'Add User',
+    link: '/admin/users/add'
+  }
+}) %>
+
+<table class="table table-bordered table-hover">
+  <thead class="thead-light">
+    <tr>
+      <th>ID</th>
+      <th>Name</th>
+      <th>E-mail</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+  <% users.forEach((user) => { %>
+    <tr>
+      <td><%= user.id %></td>
+      <td><%= user.name %></td>
+      <td><%= user.email %></td>
+      <td>
+        <a class="btn btn-outline-warning" href="/admin/users/<%= user.id %>/edit">Edit</a>
+        <form method="POST" action="/admin/users/delete" style="display: inline;" onsubmit="deleteConfirm(event, this)">
+          <input name="id" type="hidden" value="<%= user.id %>" />
+          <button type="submit" class="btn btn-outline-danger ml-2">Delete</button>
+        </form>
+      </td>
+    </tr>
+  <% }) %>
+  </tbody>
+</table>
+
+<%- include ('../../partials/footer.ejs') %>
+
+<script>
+  function deleteConfirm(event, form) {
+    event.preventDefault();
+    const decision = confirm('Do you really want to delete this user?');
+
+    if (decision) {
+      form.submit();
+    }
+  }
+</script>

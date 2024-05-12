@@ -1,0 +1,26 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+  <ul class="navbar-nav mr-auto">
+    <li class="nav-item">
+      <span class="navbar-brand">Admin Blog Node.js</span>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link font-weight-bold" href="/">Home</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link font-weight-bold" href="/admin/categories">Categories</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link font-weight-bold" href="/admin/articles">Articles</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link font-weight-bold" href="/admin/users">Users</a>
+    </li>
+  </ul>
+
+  <ul class="navbar-nav ml-auto">
+    <li class="nav-item nav-link text-right">
+      <%= loggedinUser.name %>
+      <a class="nav-link font-weight-bold" href="/logout">Logout</a>
+    </li>
+  </ul>
+</nav>

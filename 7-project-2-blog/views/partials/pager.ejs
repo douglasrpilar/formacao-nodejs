@@ -1,0 +1,21 @@
+<% if (typeof pager !== 'undefined') { %>
+  <nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center mt-5 mb-5">
+      <% if (pager?.prev != null) { %>
+        <li class="page-item">
+          <a class="page-link" href="/?page=<%= pager.prev %>">
+            <span aria-hidden="true">&laquo;</span>
+            Previous
+          </a>
+        </li>
+      <% } %>
+      <% if (pager?.next != null) { %>
+        <li class="page-item">
+          <a class="page-link" href="/?page=<%= pager.next %>">
+            Next
+            <span aria-hidden="true">&raquo;</span></a>
+        </li>
+      <% } %>
+    </ul>
+  </nav>
+<% } %>
