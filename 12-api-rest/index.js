@@ -1,6 +1,9 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 const app = express();
+
+app.use(cors());
 
 // Body parser.
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -70,7 +73,12 @@ app.post('/game', (req, res) => {
     res.sendStatus(400);
   }
   else {
-    let { id } = DB.games.reduce((prev, cur) => (prev && prev.id > cur.id) ? prev : cur);
+    let id = 0;
+
+    if (DB.games.length > 0) {
+      ({ id } = DB.games.reduce((prev, cur) => (prev && prev.id > cur.id) ? prev : cur));
+    }
+
     let game = {
       id: id + 1,
       name,
@@ -129,7 +137,6 @@ app.put('/game/:id', (req, res) => {
         else {
           updatedGame.name = name;
         }
-
       }
 
       if (!error && year != undefined) {
@@ -157,7 +164,6 @@ app.put('/game/:id', (req, res) => {
         game = updatedGame;
         res.sendStatus(200);
       }
-
     }
   }
 });

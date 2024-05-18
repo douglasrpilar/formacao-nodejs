@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Axios</title>
+</head>
+<body>
+
+  <h2>New Game</h2>
+  <input type="text" name="name" id="create-name" placeholder="Name" />
+  <input type="number" name="year" id="create-year" placeholder="Year" />
+  <input type="number" name="price" id="create-price" placeholder="Price" />
+  <button type="button" onclick="createGame()">Create</button>
+
+  <br />
+  <br />
+  <br />
+  <hr />
+
+  <h2>Games</h2>
+
+  <% if (games.length > 0)  { %>
+    <table width="100%" border="1px">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Year</th>
+          <th>Price ($)</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% games.forEach(game => { %>
+          <tr data-id="<%= game.id %>">
+            <td><%= game.id %></td>
+            <td><input type="text" data-name="name" data-value="<%= game.name %>" placeholder="Name" value="<%= game.name %>" readonly="redonly" /></td>
+            <td><input type="number" data-name="year" data-value="<%= game.year %>" placeholder="Year" value="<%= game.year %>" readonly="redonly" /></td>
+            <td><input type="number" data-name="price" data-value="<%= game.price %>" placeholder="Price" value="<%= game.price %>" readonly="redonly" /></td>
+            <td>
+              <button class="edit-button" type="button" onclick="editGame(<%= game.id %>, this)">Edit</button>
+              <button class="cancel-edit-button" type="button" onclick="cancelEditGame(this)" style="display:none">Cancel</button>
+              <button type="button" onclick="deleteGame(<%= game.id %>)">Delete</button>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  <% } else { %>
+    No games found.
+  <% } %>
+
+</body>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+  axios.defaults.baseURL = 'http://localhost:3003';
+
+  var createGame = () => {
+    let name = document.getElementById('create-name').value;
+    let year = document.getElementById('create-year').value;
+    let price = document.getElementById('create-price').value;
+    let data = {name, year, price}
+
+    axios.post('/game', data)
+      .then(res => {
+        if (res.status == 201) {
+          location.reload();
+        }
+      })
+      .catch(err => {
+        console.log(err);
+        alert(err.message);
+      });
+  }
+
+  var editGame = (id, button) => {
+    let tr = button.closest('tr');
+    let inputs = tr.getElementsByTagName('input');
+    let cancelEditButton = tr.querySelector('.cancel-edit-button');
+
+    if (button.innerHTML == 'Edit') {
+      button.innerHTML = 'Save';
+      cancelEditButton.style.display = 'inline';
+
+      for (const input of inputs) {
+        input.removeAttribute('readonly');
+      }
+    }
+    // Save editing.
+    else {
+      if (confirm('Are you sure you want to save changes to game ' + id + '?') == true) {
+        button.innerHTML = 'Edit';
+        cancelEditButton.style.display = 'none';
+        let data = {};
+
+        for (const input of inputs) {
+          input.setAttribute('readonly', 'readonly');
+          data[input.dataset.name] = input.value;
+        }
+
+        axios.put('/game/' + id, data)
+          .then(res => {
+            if (res.status == 200) {
+              alert('Changes saved!');
+            }
+          })
+          .catch(err => {
+            console.log(err);
+            alert(err.message);
+          });
+      }
+    }
+  }
+
+  var cancelEditGame = (cancelEditButton) => {
+    let tr = cancelEditButton.closest('tr');
+    let inputs = tr.getElementsByTagName('input');
+    let editButton = tr.querySelector('.edit-button');
+
+    editButton.innerHTML = 'Edit';
+    cancelEditButton.style.display = 'none';
+
+    for (const input of inputs) {
+      input.setAttribute('readonly', 'readonly');
+      input.value = input.dataset.value;
+    }
+  }
+
+  var deleteGame = (id) => {
+    if (confirm('Are you sure you want to delete game ' + id + '?') == true) {
+      axios.delete('/game/' + id)
+        .then(res => {
+          if (res.status == 200) {
+            location.reload();
+          }
+        })
+        .catch(err => {
+          console.log(err);
+          alert(err.message);
+        });
+    }
+  }
+
+
+</script>
+</html>
