@@ -3,7 +3,10 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const app = express();
-const jwtSecret = 'dQqTRKLZPuAliTlvGwRUFEXLQDQ0OdoJwo5J0cDtzBT8W5qyLteHmaMsaMkviYjC';
+
+const JWT_SECRET = 'dQqTRKLZPuAliTlvGwRUFEXLQDQ0OdoJwo5J0cDtzBT8W5qyLteHmaMsaMkviYjC';
+const PORT = 3003;
+const API_URL = 'http://localhost:' + PORT;
 
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -22,7 +25,7 @@ const auth = (req, res, next) => {
     const bearer = authorization.split(' ');
     const token = bearer[1];
 
-    jwt.verify(token, jwtSecret, (err, data) => {
+    jwt.verify(token, JWT_SECRET, (err, data) => {
       if (err) {
         res.status(401);
         res.json({
@@ -89,8 +92,36 @@ const DB = {
 }
 
 app.get('/games', auth, (req, res) => {
+  DB.games.forEach((game, index)  => {
+    game.links = [
+      {
+        href: `${API_URL}/game/${game.id}`,
+        method: 'GET',
+        rel: 'game_retrieve',
+      },
+      {
+        href: `${API_URL}/game/${game.id}`,
+        method: 'DELETE',
+        rel: 'game_delete',
+      },
+      {
+        href: `${API_URL}/game/${game.id}`,
+        method: 'PUT',
+        rel: 'game_edit',
+      },
+    ];
+    DB.games[index] = game;
+  });
+
   res.statusCode = 200;
-  res.json(DB.games);
+  res.json({
+    games: DB.games,
+    links: [{
+      href: `${API_URL}/game`,
+      method: 'POST',
+      rel: 'game_create',
+    }]
+  });
 });
 
 app.get('/game/:id', auth, (req, res) => {
@@ -107,6 +138,24 @@ app.get('/game/:id', auth, (req, res) => {
       res.sendStatus(404);
     }
     else {
+      game.links = [
+        {
+          href: `${API_URL}/game/${game.id}`,
+          method: 'GET',
+          rel: 'game_retrieve',
+        },
+        {
+          href: `${API_URL}/game/${game.id}`,
+          method: 'DELETE',
+          rel: 'game_delete',
+        },
+        {
+          href: `${API_URL}/game/${game.id}`,
+          method: 'PUT',
+          rel: 'game_edit',
+        },
+      ];
+
       res.status(200);
       res.json(game);
     }
@@ -135,6 +184,24 @@ app.post('/game', auth, (req, res) => {
       year,
       price
     }
+
+    game.links = [
+      {
+        href: `${API_URL}/game/${game.id}`,
+        method: 'GET',
+        rel: 'game_retrieve',
+      },
+      {
+        href: `${API_URL}/game/${game.id}`,
+        method: 'DELETE',
+        rel: 'game_delete',
+      },
+      {
+        href: `${API_URL}/game/${game.id}`,
+        method: 'PUT',
+        rel: 'game_edit',
+      },
+    ];
 
     DB.games.push(game);
     res.status(201);
@@ -212,7 +279,26 @@ app.put('/game/:id', auth, (req, res) => {
       }
       else {
         game = updatedGame;
-        res.sendStatus(200);
+        updatedGame.links = [
+          {
+            href: `${API_URL}/game/${game.id}`,
+            method: 'GET',
+            rel: 'game_retrieve',
+          },
+          {
+            href: `${API_URL}/game/${game.id}`,
+            method: 'DELETE',
+            rel: 'game_delete',
+          },
+          {
+            href: `${API_URL}/game/${game.id}`,
+            method: 'PUT',
+            rel: 'game_edit',
+          },
+        ];
+
+        res.status(200);
+        res.json(updatedGame);
       }
     }
   }
@@ -250,7 +336,7 @@ app.post('/auth', (req, res) => {
           name,
           email
         },
-        jwtSecret,
+        JWT_SECRET,
         {
           expiresIn: '24h'
         },
@@ -273,6 +359,6 @@ app.post('/auth', (req, res) => {
   }
 });
 
-app.listen(3003, () => {
+app.listen(PORT, () => {
   console.log('API running...');
 });

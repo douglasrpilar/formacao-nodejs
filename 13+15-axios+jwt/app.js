@@ -73,7 +73,7 @@ app.get('/', auth, async (req, res) => {
 
   try {
     let response = await axios.get('/games', axiosConfig);
-    games = response.data;
+    games = response.data.games;
   }
   catch(error) {
     console.error(error);
