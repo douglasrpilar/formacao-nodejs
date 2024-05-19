@@ -33,7 +33,6 @@ const auth = (req, res, next) => {
         req.token = token;
         let {id, name, email} = data;
         req.loggedUser = {id, name, email}
-        console.log(req.loggedUser);
         next();
       }
     });
@@ -221,7 +220,7 @@ app.put('/game/:id', auth, (req, res) => {
 
 app.post('/auth', (req, res) => {
   let {email, password} = req.body;
-  console.log(email, password);
+
   if (email == undefined || email == '') {
     res.status(400);
     res.json({

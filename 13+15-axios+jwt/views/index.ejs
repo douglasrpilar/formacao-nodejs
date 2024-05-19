@@ -53,18 +53,17 @@
   <% } %>
 
 </body>
-
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
-  axios.defaults.baseURL = 'http://localhost:3003';
+  let axiosConfig = <%- JSON.stringify(axiosConfig) %>;
 
-  var createGame = () => {
+  const createGame = () => {
     let name = document.getElementById('create-name').value;
     let year = document.getElementById('create-year').value;
     let price = document.getElementById('create-price').value;
     let data = {name, year, price}
 
-    axios.post('/game', data)
+    axios.post('/game', data, axiosConfig)
       .then(res => {
         if (res.status == 201) {
           location.reload();
@@ -76,7 +75,7 @@
       });
   }
 
-  var editGame = (id, button) => {
+  const editGame = (id, button) => {
     let tr = button.closest('tr');
     let inputs = tr.getElementsByTagName('input');
     let cancelEditButton = tr.querySelector('.cancel-edit-button');
@@ -101,7 +100,7 @@
           data[input.dataset.name] = input.value;
         }
 
-        axios.put('/game/' + id, data)
+        axios.put('/game/' + id, data, axiosConfig)
           .then(res => {
             if (res.status == 200) {
               alert('Changes saved!');
@@ -115,7 +114,7 @@
     }
   }
 
-  var cancelEditGame = (cancelEditButton) => {
+  const cancelEditGame = (cancelEditButton) => {
     let tr = cancelEditButton.closest('tr');
     let inputs = tr.getElementsByTagName('input');
     let editButton = tr.querySelector('.edit-button');
@@ -129,9 +128,9 @@
     }
   }
 
-  var deleteGame = (id) => {
+  const deleteGame = (id) => {
     if (confirm('Are you sure you want to delete game ' + id + '?') == true) {
-      axios.delete('/game/' + id)
+      axios.delete('/game/' + id, axiosConfig)
         .then(res => {
           if (res.status == 200) {
             location.reload();
@@ -143,7 +142,6 @@
         });
     }
   }
-
 
 </script>
 </html>
