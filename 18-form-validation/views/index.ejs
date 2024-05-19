@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Form Validation</title>
+</head>
+<body>
+  <h2>Login</h2>
+
+  <form method="POST" action="/validation">
+    <input type="text" name="name" placeholder="Name" value="<%= values.name %>" />
+    <br/>
+    <% errors.filter(e => e.key == 'name').forEach(e => { %>
+      <%= e.msg %><br/>
+    <% }) %>
+
+    <input type="text" name="email" placeholder="E-mail" value="<%= values.email %>" />
+    <br/>
+    <% errors.filter(e => e.key == 'email').forEach(e => { %>
+      <%= e.msg %><br/>
+    <% }) %>
+
+    <input type="number" name="age" placeholder="Age" value="<%= values.age %>" />
+    <br/>
+    <% errors.filter(e => e.key == 'age').forEach(e => { %>
+      <%= e.msg %><br/>
+    <% }) %>
+
+    <button type="submit">Login</button>
+  </form>
+</body>
+</html>
