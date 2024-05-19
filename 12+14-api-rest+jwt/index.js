@@ -1,13 +1,44 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const jwt = require('jsonwebtoken');
 const app = express();
+const jwtSecret = 'dQqTRKLZPuAliTlvGwRUFEXLQDQ0OdoJwo5J0cDtzBT8W5qyLteHmaMsaMkviYjC';
 
 app.use(cors());
-
-// Body parser.
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
+const auth = (req, res, next) => {
+  const authorization = req.headers['authorization'];
+
+  if (authorization == undefined) {
+    res.status(401);
+    res.json({
+      error: 'Invalid token.'
+    });
+  }
+  else {
+    const bearer = authorization.split(' ');
+    const token = bearer[1];
+
+    jwt.verify(token, jwtSecret, (err, data) => {
+      if (err) {
+        res.status(401);
+        res.json({
+          error: 'Invalid token.'
+        });
+      }
+      else {
+        req.token = token;
+        let {id, name, email} = data;
+        req.loggedUser = {id, name, email}
+        console.log(req.loggedUser);
+        next();
+      }
+    });
+  }
+}
 
 const DB = {
   games: [
@@ -35,15 +66,35 @@ const DB = {
       year: 1997,
       price: 80.50
     },
+  ],
+  users: [
+    {
+      id: 1,
+      name: 'User 1',
+      email: 'user1@email.com',
+      password: '102030'
+    },
+    {
+      id: 2,
+      name: 'User 2',
+      email: 'user2@email.com',
+      password: '102030'
+    },
+    {
+      id: 3,
+      name: 'User 3',
+      email: 'user3@email.com',
+      password: '102030'
+    }
   ]
 }
 
-app.get('/games', (req, res) => {
+app.get('/games', auth, (req, res) => {
   res.statusCode = 200;
   res.json(DB.games);
 });
 
-app.get('/game/:id', (req, res) => {
+app.get('/game/:id', auth, (req, res) => {
   let id = req.params.id;
 
   if (isNaN(id)) {
@@ -63,7 +114,7 @@ app.get('/game/:id', (req, res) => {
   }
 });
 
-app.post('/game', (req, res) => {
+app.post('/game', auth, (req, res) => {
   const {name, year, price} = req.body;
 
   if (
@@ -92,7 +143,7 @@ app.post('/game', (req, res) => {
   }
 });
 
-app.delete('/game/:id', (req, res) => {
+app.delete('/game/:id', auth, (req, res) => {
   let id = req.params.id;
 
   if (isNaN(id)) {
@@ -112,7 +163,7 @@ app.delete('/game/:id', (req, res) => {
   }
 });
 
-app.put('/game/:id', (req, res) => {
+app.put('/game/:id', auth, (req, res) => {
   let id = req.params.id;
 
   if (isNaN(id)) {
@@ -164,6 +215,61 @@ app.put('/game/:id', (req, res) => {
         game = updatedGame;
         res.sendStatus(200);
       }
+    }
+  }
+});
+
+app.post('/auth', (req, res) => {
+  let {email, password} = req.body;
+  console.log(email, password);
+  if (email == undefined || email == '') {
+    res.status(400);
+    res.json({
+      error: 'Enter a valid email.'
+    });
+  }
+  else if (password == undefined || password == '') {
+    res.status(400);
+    res.json({
+      error: 'Enter a valid password.'
+    });
+  }
+  else {
+    let user = DB.users.find(u => u.email == email);
+
+    if (user == undefined || user.password != password) {
+      res.status(401);
+      res.json({
+        error: 'Not authorized.'
+      });
+    }
+    else {
+      let {id, name, email} = user;
+      jwt.sign(
+        {
+          id,
+          name,
+          email
+        },
+        jwtSecret,
+        {
+          expiresIn: '24h'
+        },
+        (err, token) => {
+          if (err) {
+            res.status(500);
+            res.json({
+              error: 'Failed to generate token.'
+            });
+          }
+          else {
+            res.status(200);
+            res.json({
+              token
+            });
+          }
+        }
+      );
     }
   }
 });
